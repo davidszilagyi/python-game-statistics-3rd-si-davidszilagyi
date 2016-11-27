@@ -1,6 +1,5 @@
 # Report functions
 
-import re
 import export
 
 def open_file(file_name):
@@ -9,7 +8,7 @@ def open_file(file_name):
     database = []
 
     for lines in file_:
-        database.append(re.split("\t|\n", lines))
+        database.append(lines.strip().split("\t"))
 
     file_.close()
 
