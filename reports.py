@@ -11,7 +11,7 @@ def open_file(file_name):
     for lines in file_:
         database.append(re.split("\t|\n", lines))
 
-    file_.close
+    file_.close()
 
     return database
 
