@@ -60,6 +60,7 @@ def get_latest(file_name):
     database = open_file(file_name)
 
     year_ = database[0][2]
+    latest = database[0][0]
 
     for games in database:
         if games[2] > year_:
