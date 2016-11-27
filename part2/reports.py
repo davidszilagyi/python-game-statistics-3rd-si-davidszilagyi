@@ -1,5 +1,6 @@
 # Report functions
 
+import math
 import export
 
 def open_file(file_name):
@@ -34,104 +35,176 @@ def abc_sorting(a_list, a_index):
 
     return sorted_list
 
-def count_games(file_name):
-    a_text = ("How many games are in the file?:")
-
-    export.export_answers(a_text, len(open_file(file_name)))
-
-    return len(open_file(file_name))
-
-def decide(file_name, year):
-    a_text = ("Is there a game from a given year?:")
+def get_most_played(file_name):
+    a_text = "What is the title of the most played game?:"
 
     database = open_file(file_name)
 
-    for games in database:
-        if games[2] == str(year):
-            export.export_answers(a_text, "True")
-            return True
-    
-    export.export_answers(a_text, "False")
-
-def get_latest(file_name):
-    a_text = "Which was the latest game?:"
-
-    database = open_file(file_name)
-
-    year_ = database[0][2]
+    top_copies = float(database[0][1])
     latest = database[0][0]
 
     for games in database:
-        if games[2] > year_:
-            year_ = games[2]
+        if float(games[1]) > top_copies:
+            top_copies = float(games[1])
             latest = games[0]
-        elif games[2] == year_:
+        elif float(games[1]) == top_copies:
             pass
     
     export.export_answers(a_text, latest)
 
     return latest
 
-def count_by_genre(file_name, genre):
-    a_text = "How many games do we have by genre?:"
+def sum_sold(file_name):
+    a_text = "How many copies have been sold total?:"
 
     database = open_file(file_name)
 
-    count = 0
+    sum_total = 0
 
     for games in database:
-        if games[3] == genre:
+        sum_total += float(games[1])
+
+    export.export_answers(a_text, sum_total)
+
+    return sum_total
+
+def get_selling_avg(file_name):
+    a_text = "What is the average selling?:"
+
+    database = open_file(file_name)
+
+    avg_total = 0
+
+    for games in database:
+        avg_total += float(games[1])
+    
+    avg_total = avg_total / len(database)
+
+    export.export_answers(a_text, avg_total)
+
+    return avg_total
+
+def count_longest_title(file_name):
+    a_text = "How many characters long is the longest title?:"
+
+    database = open_file(file_name)
+
+    names = []
+
+    for games in database:
+        names.append(games[0])
+
+    longest = 0
+
+    for titles in names:
+        count = 0
+        for char in titles:
             count += 1
-    
-    export.export_answers(a_text, count)
+        if count > longest:
+            longest = count
 
-    return count
+    export.export_answers(a_text, longest)
 
-def get_line_number_by_title(file_name, title):
-    a_text = "What is the line number of the given game (by title)?:"
+    return longest
 
-    database = open_file(file_name)
-
-    for games in database:
-        try:
-            if games[0] == title:
-                export.export_answers(a_text, database.index(games) + 1)
-                return database.index(games) + 1
-        except ValueError:
-            export.export_answers(a_text, ("There is no game like " + title))
-            return ("There is no game like " + title)
-
-def sort_abc(file_name):
-    a_text = "What is the alphabetical ordered list of the titles?:"
-
-    sorting = abc_sorting(open_file(file_name), 0)
-
-    export.export_answers(a_text, sorting)
-
-    return sorting
-
-def get_genres(file_name):
-    a_text = "What are the genres?"
-
-    sorting = abc_sorting(open_file(file_name), 3)
-
-    export.export_answers(a_text, sorting)
-
-    return sorting
-
-def when_was_top_sold_fps(file_name):
-    a_text = "What is the release date of the top sold 'First-person shooter' game?:"
+def get_date_avg(file_name):
+    a_text = "What is the average of the release dates?:"
 
     database = open_file(file_name)
 
-    top_sold = 0
+    sum_year = 0
 
     for games in database:
-        if games[3] == "First-person shooter":
-            if float(games[1]) > float(top_sold):
-                top_sold = float(games[1])
-                year_ = int(games[2])
+        sum_year += int(games[2])
     
-    export.export_answers(a_text, year_)
+    avg_year = math.ceil(sum_year / len(database))
 
-    return year_
+    export.export_answers(a_text, avg_year)
+
+    return avg_year
+
+def get_game(file_name, title):
+    a_text = "What properties has a game?:"
+
+    database = open_file(file_name)
+
+    properties = []
+
+    for games in database:
+        if games[0] == title:
+            for i in range(len(games)):
+                try:
+                    properties.append(float(games[i]))
+                except ValueError:
+                    properties.append(games[i])
+    
+    export.export_answers(a_text, properties)
+
+    return properties
+
+def count_grouped_by_genre(file_name):
+    a_text = "How many games are there grouped by genre?:"
+
+    database = open_file(file_name)
+
+    dictionary = {}
+
+    genres = abc_sorting(database, 3)
+
+    for types in genres:
+        count = 0
+        for games in database:
+            if games[3] == types:
+                count += 1
+        dictionary[types] = count
+
+    export.export_answers(a_text, dictionary)
+    
+    return dictionary
+
+def get_date_ordered(file_name):
+    a_text = "What is the date ordered list of the games?:"
+
+    database = open_file(file_name)
+
+    year_d = {}
+
+    for games in database:
+        if not int(games[2]) in year_d:
+            titles = []
+            
+            for datas in database:
+                if int(datas[2]) == int(games[2]):
+                    titles.append(datas[0])
+            
+            lowercase = []
+            sorted_titles = []
+
+            for names in titles:
+                if not names in lowercase:
+                    lowercase.append(names.lower())
+
+            while lowercase:
+                smallest = min(lowercase)
+                smallest_index = lowercase.index(smallest)
+                small = titles[smallest_index]
+                sorted_titles.append(small)
+                titles.pop(titles.index(small))
+                lowercase.pop(lowercase.index(smallest))
+
+            year_d[int(games[2])] = sorted_titles
+
+    temp = list(dict.values(year_d))
+    
+    ordered = []
+
+    for i in range(len(temp)-1, -1, -1):
+        if len(temp[i]) > 1:
+            for x in range(0, len(temp[i])):
+                ordered.append(temp[i][x])
+        else:
+            ordered.append(temp[i][0])
+
+    export.export_answers(a_text, ordered)
+
+    return ordered
